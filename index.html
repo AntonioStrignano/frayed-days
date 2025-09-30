@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frayed Days - Loop Narrativo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1 id="title">Frayed Days</h1>
+            <div id="stats">
+                <div class="stat">
+                    <span class="stat-label">Giorno:</span>
+                    <span id="day">1</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Tempo:</span>
+                    <span id="time">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Colore:</span>
+                    <span id="color">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Profondità:</span>
+                    <span id="depth">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Burnout:</span>
+                    <span id="burnout">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="game-area">
+            <div id="narrative">
+                <p id="narrative-text">Ti svegli. Un altro giorno. La routine ti chiama, ma qualcosa dentro vuole cambiare...</p>
+            </div>
+
+            <div id="choices">
+                <!-- Choices will be dynamically generated -->
+            </div>
+
+            <div id="message" class="hidden"></div>
+        </main>
+
+        <footer>
+            <button id="restart" class="hidden">Ricomincia</button>
+            <div id="history-log"></div>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
