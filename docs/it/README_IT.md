@@ -1,4 +1,6 @@
 # frayed-days
+**"Restare consuma quanto andare"**
+
 Micro narrativa a loop di giornate: le scorciatoie ti danno tempo ora, ma consumano colore dopo.
 
 ## High Concept
@@ -8,7 +10,7 @@ Loop narrativo 2D (Godot 4) sul compromesso tra scorciatoie immediate (tempo ris
 - Loop giornaliero: 6–9 slot variabili eseguiti da `DayController`.
 - Categorie nodo: Shortcut / Challenge / Support / Comfort / Reflect / Shop (logica base dei delta in `NodeExecutor`).
 - Risorse tracciate: growth, monotony, comfort, debt, shortcut_coins (SC), growth_coins (GC placeholder), fragments, tokens (effimeri), wildcard_points (post-run), accessories (in arrivo/posseduti).
-- Puzzle: 5 archetipi stub (memory, association, timing, risk, emotion) instradati via `PuzzleManager` con risultati strutturati.
+- Puzzle: 6 archetipi finali (memory, association, timing, risk, resource balance, signal filter) instradati via `PuzzleManager` con risultati strutturati.
 - Reflection / hint tiers: `ReflectionManager` incrementa i livelli di hint dopo fallimenti quando si sceglie un nodo di reflection.
 - Burnout: contatore di successi consecutivi nelle challenge induce affliction (moltiplicatore penalizzante sulla ricompensa growth) da config.
 - Degradation: calcolo tier tramite `DegradationManager` da monotony + rapporto di scorciatoie (thresholds centralizzati JSON).

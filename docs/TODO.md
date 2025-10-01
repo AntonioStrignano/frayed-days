@@ -12,6 +12,17 @@
 - **Pillars** (3–5 principi non negoziabili)
     *(Questi definiscono il perimetro: se mancano, ogni scelta dopo rischia rework.)*
 
+### Fondamenta Design Coerente (Aggiornamento)
+- **Conferma puzzle lineup finale (6 archetipi)**
+- **Integra nuovo sistema monotonia (skip-driven)**
+- **Stesura tabella tier palette bipolare (7) + hysteresis**
+- **Definizione token sequence deterministica + cap 4**
+- **Definizione Patto punitivo scaling (formula)**
+- **Definizione Burnout soglie 6/9/12 + day pattern trigger**
+- **GrowthScore + Monotonia base formulas centralizzate in DATA_MODEL.md**
+- **Aggiornare DESIGN.md sezioni: Puzzle Progression, Monotony, Palette, Burnout, Tokens, Pact**
+- **Puntatore implementazione Phase A (Memory / Timing / Risk) con nuova economia (failure reward + token guaranteed)**
+
 ---
 
 ## Fase 1 – Struttura di Gioco di Base

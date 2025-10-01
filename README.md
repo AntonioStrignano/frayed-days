@@ -1,4 +1,6 @@
 # frayed-days
+**"Restare consuma quanto andare"**
+
 Life-loop micro narrative: shortcuts give time now, cost color later.
 
 ## High Concept
@@ -8,7 +10,7 @@ A 2D Godot 4 narrative day-loop about the trade-off between immediate shortcuts 
 - Day loop: variable 6–9 slots executed via `DayController`.
 - Node categories: Shortcut / Challenge / Support / Comfort / Reflect / Shop (basic delta logic in `NodeExecutor`).
 - Resources tracked: growth, monotony, comfort, debt, shortcut_coins (SC), growth_coins (GC placeholder), fragments, tokens (ephemeral), wildcard_points (post-run), accessories (pending/owned).
-- Puzzles: 5 archetype stubs (memory, association, timing, risk, emotion) routed through `PuzzleManager` returning structured results.
+- Puzzles: 6 final archetypes (memory, association, timing, risk, resource balance, signal filter) routed through `PuzzleManager` returning structured results.
 - Reflection / hint tiers: `ReflectionManager` upgrades tiers after failures when reflection node chosen.
 - Burnout: consecutive challenge success counter induces affliction (growth reward penalty multiplier) per config.
 - Degradation: tier computed by `DegradationManager` from monotony + shortcut pattern ratio (central JSON thresholds).
