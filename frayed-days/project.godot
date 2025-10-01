@@ -1,0 +1,16 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+config/name="Frayed Days"
+run/main_scene=""
+config/icon="res://icon.svg"
+
+[rendering]
+renderer/rendering_method="forward_plus"
+
+[autoload]
+GameState="res://autoload/GameState.gd"
+
+[editor]
+export/convert_text_resources_to_binary=false
