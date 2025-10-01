@@ -1,6 +1,6 @@
 extends Node
 
-var run_index:int = 0
+var run_index := 0
 var day:int = 1
 var resources := {
     "growth": 0,
@@ -18,7 +18,7 @@ var resources := {
 var routine_lock: bool = false
 
 func _ready():
-    print("GameState ready (stub)")
+    print("GameState ready")
 
 func start_run():
     run_index += 1

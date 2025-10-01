@@ -3,5 +3,6 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "editor.insertSpaces": true,
-  "editor.tabSize": 4
+"editor.tabSize": 4,
+"godotTools.editorPath.godot3": "c:\\Users\\POSTAZIONE-53\\Desktop\\Godot_v4.5-stable_win64.exe"
 }
