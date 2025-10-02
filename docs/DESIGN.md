@@ -176,3 +176,47 @@ A 2D Godot 4 narrative day-loop exploring the tension between immediate shortcut
 3. **Meaningful Recovery**: Failure provides pathways to improvement, not just penalty
 4. **Visual Cohesion**: Monotony and growth directly manifest in presentation layer
 5. **Deterministic Fairness**: Core rewards follow predictable rules while maintaining emotional impact
+
+---
+## Addendum v0.1 (Snapshot Overrides)
+This addendum updates legacy sections above. On any conflict, THIS section prevails; historical text retained for context.
+
+### Updated Escalation
+- Easy → Medium: 2 consecutive successes (was 1)
+- Medium → Hard: 3 consecutive successes (was 2)
+- Demotion: 2 consecutive failures in same tier (Easy cannot demote)
+
+### Hard Gating by Day
+- Days 1–2: Easy only
+- Days 2–3: Easy + Medium (0% Hard)
+- Days 4–5: Hard allowed ≤33% puzzle slots
+- Day ≥6: Hard ≤50%
+
+### Pact v0.1 Rework
+Accept (iteration N): monotony +15*N, remove token cap (infinite), enable Fragment Banking (FragmentsBank), fragment→MC 2:1 (base 3:1), Day1 next run growth penalty -15%*N (cap -45%), -20% cost on Monotony branch skills.
+Decline streak: 2→ +10% Growth first 2 puzzles; 3→ +1 guaranteed fragment first Hard; ≥4→ cumulative -5% monotony gain (cap -30%).
+
+### Burnout Pattern-Day v2
+Stage1: 2 consecutive days ≥80% puzzle slots & 0 comfort → palette tier cap 5.
+Stage2: 3 consecutive days ≥75% puzzle slots & comfort ≤1 → -15% Growth & -10% day timer.
+Forced Rest: persistence (next day still ≥70% puzzle) → comfort/reflection only, +10 monotony, reset pattern.
+Recovery: day <70% puzzle & ≥1 comfort/reflection → stage -1.
+
+### New Monotony Event
+`hard_repeat_same_type`: +2 monotony stacking (max +6) for consecutive Hard of the same archetype.
+
+### Dynamic Token Cap
+Base: 4 tokens. Pact active: unlimited.
+
+### Updated Depth Formula
+`Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) - Monotony - (PactAccepts * 8)`
+Replaces earlier `growth - (monotony + debt)`. Debt folded out for now (latent placeholder).
+
+### FragmentsBank & MC
+Fragments earned under Pact go to FragmentsBank (persistent). Conversion: 3:1 base, 2:1 under Pact. MC coefficient 0.3 (removable if signal noisy).
+
+### DRY Note
+Numeric authority lives in balancing/economy/data model docs; this addendum is structural summary only (coefficients 0.5 / 0.3 / 8 / 15 / 0.15 markers for tuning).
+
+---
+End of Addendum v0.1

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "escalation": {
+    "easy_to_medium_successes": 2,
+    "medium_to_hard_successes": 3,
+    "demote_fail_chain": 2
+  },
+  "base_growth_values": {
+    "easy": 10,
+    "medium": 15,
+    "hard": 20
+  },
+  "failure_factor": 0.35,
+  "hard_fragment_drop_chance": 0.2,
+  "hard_repeat_monotony_increment": 2,
+  "hard_repeat_monotony_cap": 6,
+  "pity": {
+    "hard_success_chain_forced_fragment": 4
+  }
+}

@@ -179,3 +179,48 @@ Loop narrativo 2D (Godot 4) che esplora la tensione tra scorciatoie immediate (t
 
 ## Riferimento Strutturale
 Questo documento copre principi e sistemi; la sequenza operativa dettagliata del loop (stati, timing, vincoli micro) è centralizzata in `SPEC_CORE_LOOP_it.md` per evitare duplicazioni. Numeri finali di bilanciamento risiedono in `BALANCING_NOTES_it.md`; struttura dati in `DATA_MODEL_it.md`; gating e percentuali Hard in `PROGRESSION_it.md`; economia estesa in `ECONOMIA_it.md`; telemetria in `TELEMETRIA_it.md`.
+
+---
+## Addendum v0.1 (Snapshot Congelato)
+Consolida differenze rispetto alla versione legacy sopra (non modificata per trasparenza storica). Qualsiasi conflitto: prevale questo addendum.
+
+### Escalation Aggiornata
+- Easy → Medium: 2 successi consecutivi (NON più 1)
+- Medium → Hard: 3 successi consecutivi (NON più 2)
+- Regressione: 2 fail consecutivi stesso tier → -1 tier (Easy non retrocede)
+
+### Gating Hard Giornaliero
+- Giorno 1: solo Easy
+- Giorni 2–3: Easy + Medium
+- Giorni 4–5: Hard ≤33% slot puzzle
+- Giorno ≥6: Hard ≤50% slot puzzle
+
+### Patto v0.1 (Rework)
+Accetta (iterazione N): Monotonia +15*N, rimozione cap token (infinito), FragmentsBank attivo (frammenti non consumati), conversione frammenti→MC 2:1 (base 3:1), penalità Growth Giorno1 prossima run -15% * N (cap -45%), -20% costo skill ramo Monotonia.
+
+Decline streak: 2 → +10% Growth primi 2 puzzle giorno; 3 → +1 frammento garantito primo Hard; ≥4 → -5% monotony gain cumulativo (cap -30%).
+
+### Burnout Pattern-Day v2
+- Stage1: 2 giorni consecutivi ≥80% slot puzzle e 0 comfort → palette tier max 5
+- Stage2: 3 giorni consecutivi ≥75% slot puzzle e comfort ≤1 → -15% Growth + -10% day timer
+- Forced Rest Day: persistenza comportamento (giorno successivo ancora ≥70% puzzle) → solo Comfort/Reflection, Monotonia +10, reset pattern
+- Recovery: giorno <70% puzzle E ≥1 comfort/reflection → stage -1
+
+### Evento Monotonia Nuovo
+`hard_repeat_same_type`: +2 monotonia stacking (max +6) su Hard consecutivi stesso archetipo.
+
+### Token Cap Dinamico
+Base: 4 token; Patto attivo → cap infinito.
+
+### Depth Formula Aggiornata
+`Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) - Monotony - (PactAccepts * 8)`
+Sostituisce versione precedente che sottraeva genericamente `debt`; ora debt integrato implicitamente / rimandato.
+
+### FragmentsBank & MC
+Frammenti acquisiti sotto Patto vanno in FragmentsBank (persistente). Conversione MC: 3:1 base, 2:1 con Patto. MC coefficiente Depth 0.3 (disattivabile se rumore).
+
+### Nota DRY
+Valori numerici (0.5 / 0.3 / 8 / 15 / -15%) vivono autoritativamente in `BALANCING_NOTES_it.md`. Qui solo sintesi.
+
+---
+Fine Addendum v0.1

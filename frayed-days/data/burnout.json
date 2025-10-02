@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "pattern_day_model": {
+    "stage1_trigger": {"days": 2, "puzzle_slot_pct": 0.80, "comfort_min": 0},
+    "stage2_trigger": {"days": 3, "puzzle_slot_pct": 0.75, "comfort_max": 1},
+    "forced_rest_trigger": {"puzzle_slot_pct": 0.70},
+    "recovery_condition": {"puzzle_slot_pct_lt": 0.70, "comfort_or_reflection_min": 1}
+  },
+  "effects": {
+    "stage1": {"palette_cap_tier": 5, "timer_mult": 0.90, "latency_add_ms": 30},
+    "stage2": {"growth_mult": 0.85, "day_timer_mult": 0.90}
+  }
+}

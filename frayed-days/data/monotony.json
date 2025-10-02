@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "increments": {
+    "skip_puzzle": 6,
+    "exit_after_fail": 4,
+    "pact_accept_base": 15,
+    "forced_comfort_day": 10,
+    "comfort_overuse_second": 5,
+    "comfort_overuse_third": 8,
+    "hard_repeat_same_type": 2
+  },
+  "caps": {
+    "hard_repeat_same_type_total": 6,
+    "reflection_daily_reduction": 6,
+    "tiers_up_per_day_max": 3,
+    "tiers_down_per_day_max": 2
+  },
+  "reflection_reduction": -3
+}

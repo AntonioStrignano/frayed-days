@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "monotony_spike_per_accept": 15,
+  "growth_penalty_day1_per_accept": 0.15,
+  "growth_penalty_day1_cap": 0.45,
+  "decline_streak": {
+    "growth_bonus_threshold": 2,
+    "growth_bonus_percent": 0.10,
+    "fragment_bonus_threshold": 3,
+    "monotony_gain_reduction_start": 4,
+    "monotony_gain_reduction_step": 0.05,
+    "monotony_gain_reduction_cap": 0.30
+  },
+  "fragment_conversion": {
+    "base_rate": 3,
+    "pact_rate": 2
+  },
+  "token_cap": {
+    "base": 4,
+    "pact_infinite": true
+  },
+  "depth_coefficients": {
+    "fragments_bank": 0.5,
+    "mc": 0.3,
+    "pact_accept_penalty": 8
+  }
+}

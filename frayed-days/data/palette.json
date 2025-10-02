@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "monotony_thresholds": [30, 45, 60],
+  "growth_thresholds": [20, 40, 60],
+  "hysteresis_margin": 10,
+  "growth_drop_margin": 5,
+  "tiers": [
+    "total_desaturated",
+    "heavy_faded",
+    "muted",
+    "neutral",
+    "light_vivid",
+    "full_vivid",
+    "hypersaturated"
+  ]
+}

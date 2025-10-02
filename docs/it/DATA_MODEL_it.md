@@ -1,4 +1,4 @@
-# Specifica Modello Dati
+# Specifica Modello Dati (Aggiornata v0.1)
 
 ## Struttura Stato Core del Gioco
 
@@ -18,20 +18,24 @@ day_pattern_history: Array[Dictionary] = []
 ### Sistema Risorse
 ```gdscript
 # Risorse primarie
-growth: float = 0.0          # Valuta progressione principale
-monotony: float = 0.0        # Accumulatore degradazione (skip-driven)
-comfort: float = 20.0        # Valuta reflection/recovery
 debt: float = 0.0           # Placeholder erosione
+growth: float = 0.0              # (Persist) Valuta progressione principale
+monotony: float = 0.0            # (Persist) Accumulatore degradazione
+comfort: float = 20.0            # (Volatile Giorno) Reset parziale ogni giorno
+debt: float = 0.0                # (Persist / potenziale rimozione futura)
 
 # Progressione palette
-growth_score: float = 0.0    # Separato da growth; guida palette verso l'alto
-palette_tier: int = 4        # Tier visuale corrente (1-7, 4=neutro)
+growth_score: float = 0.0        # (Persist Giorno) driver palette
+palette_tier: int = 4            # (Derivato) da growth_score/monotony + hysteresis
 
 # Valute secondarie
-fragments: int = 0           # Drop rari da puzzle
-shortcut_coins: int = 0      # SC da scorciatoie
-growth_coins: int = 0        # GC placeholder
-wildcard_points: int = 0     # Conversione post-run da token inutilizzati
+fragments: int = 0               # (Persist) Drop rari
+fragments_bank: int = 0          # (Persist) Accumulo Patto (FragmentsBank)
+mc: int = 0                      # (Persist) Monotony Coins
+tokens_discarded: int = 0        # (Telemetry aux) conteggio scarti (post VS)
+wildcard_points: int = 0         # (Persist) Conversione post-run
+shortcut_coins: int = 0          # (DEPREC) → rimuovere dopo refactor
+growth_coins: int = 0            # (DEPREC) sostituito da growth
 ```
 
 ### Tracking Progressione Puzzle
@@ -102,23 +106,26 @@ tokens_pending: Array[String] = []
 ### Sistema Patto
 ```gdscript
 # Tracking patto
-pact_count: int = 0                    # Patti totali accettati
-pact_decline_streak: int = 0           # Rifiuti consecutivi
-pact_growth_penalty: float = 0.0       # Riduzione growth corrente (%)
-pact_temptation_active: bool = false   # Overlay tentazione abilitato
+Pact:
+pact_accepts: int = 0                  # (Persist) conteggio accettazioni
+pact_decline_streak: int = 0           # (Persist) rifiuti consecutivi
+pact_growth_penalty_mult: float = 1.0  # (Derivato) moltiplicatore growth prossimo Giorno1 run
+pact_token_cap_removed: bool = false   # (Derivato) se true cap inventario disabilitato
+pact_active: bool = false              # (Persist) flag stato attivo (se definito multi-day)
+pact_monotony_spike_last: int = 0      # (Volatile) ultima applicazione per telemetria
 
 # Cronologia patto per calcolo buff resolve
-pact_runs_without: int = 0            # Run dall'ultimo patto (per reset penalità)
+pact_runs_without: int = 0             # (Persist) run senza patto consecutive
 ```
 
 ### Sistema Burnout
 ```gdscript
-# Tracking burnout slot-based
-consecutive_puzzle_slots: int = 0      # Slot consecutivi non-comfort/support
-burnout_stage: int = 0                # 0/1/2/3 livello burnout corrente
-
-# Burnout pattern giornaliero (3 giorni ≥70% puzzle, 0 comfort)
-burnout_day_pattern_count: int = 0    # Giorni qualificanti consecutivi
+# Pattern-day model
+burnout_stage: int = 0                 # (Persist Giorno) 0/1/2
+burnout_pattern_days: Array[int] = []  # (Persist breve) % puzzle giorni recenti (rolling window 3)
+burnout_forced_rest_next: bool = false # (Derivato) giornata comfort forzata in arrivo
+burnout_palette_cap_active: bool = false # (Derivato) se Stage1 limita palette tier
+burnout_penalty_active: bool = false   # (Derivato) Stage2 penalità growth/time
 ```
 
 ### Tracking Eventi Monotonia
@@ -127,12 +134,13 @@ burnout_day_pattern_count: int = 0    # Giorni qualificanti consecutivi
 monotony_events_today: Array[Dictionary] = []
 # Ogni entry: {event_type: String, monotony_change: float, slot: int}
 
-# Tipi evento per monotonia:
+# Tipi evento per monotonia (aggiornato):
 # "skip_puzzle": +6
 # "exit_after_fail": +4
 # "pact_accepted": +15*N
 # "forced_comfort_day": +10
 # "comfort_overuse": +5 (seconda), +8 (terza)
+# "hard_repeat_same_type": +2 stacking (max +6)
 # "reflection_performed": -3 (cap -6/giorno)
 ```
 
@@ -162,13 +170,13 @@ accessories_pending: Array[Dictionary] = []
 
 ### Calcolo Depth
 ```gdscript
-# Proprietà computata
-func get_depth() -> float:
-    return growth - (monotony + debt)
+# Proprietà computata (nuova formula v0.1)
+func get_depth()-> float:
+    return growth + (fragments_bank * 0.5) + (mc * 0.3) - monotony - (pact_accepts * 8)
 
 # Soglie vittoria/sconfitta
 ROUTINE_LOCK_DEPTH: float = 0.0
-SHORTCUT_RATIO_LOCK: float = 0.7
+SHORTCUT_RATIO_LOCK: float = 0.7  # (TODO valutare se mantenere shortcut ratio)
 ```
 
 ## Calcoli Derivati
@@ -211,21 +219,28 @@ func add_token_to_inventory(token: String) -> bool:
     return true
 ```
 
-### Formule Scaling Patto
+### Formule Scaling Patto (Aggiornate)
 ```gdscript
-# Penalità accettazione patto
-func get_pact_monotony_penalty() -> float:
-    return 15.0 * pact_count
+# Spike monotonia
+func get_pact_monotony_spike()->int:
+    return 15 * pact_accepts
 
-func get_pact_growth_penalty() -> float:
-    return min(0.4, 0.1 * pact_count)  # Cap a -40%
+# Penalità growth Giorno1 run successiva
+func get_pact_growth_penalty_mult()->float:
+    var penalty = 1.0 - min(0.45, 0.15 * pact_accepts)
+    return penalty
 
-# Buff resolve da rifiuto
-func get_resolve_growth_bonus() -> float:
-    return 0.1 if pact_decline_streak >= 2 else 0.0
+# Decline streak benefit
+func get_resolve_growth_bonus()->float:
+    return 0.10 if pact_decline_streak >= 2 else 0.0
 
-func get_resolve_fragment_bonus() -> bool:
+func has_resolve_fragment_bonus()->bool:
     return pact_decline_streak >= 3
+
+func get_resolve_monotony_mitigation_mult()->float:
+    # -5% gain cumulativo (cap -30%)
+    var streak = max(0, pact_decline_streak - 3)
+    return 1.0 - min(0.30, 0.05 * streak)
 ```
 
 ### Effetti Stage Burnout
@@ -243,15 +258,15 @@ BURNOUT_EFFECTS = {
 ```gdscript
 func save_state() -> Dictionary:
     return {
-        "run_progress": {...},
-        "resources": {...},
-        "puzzle_progression": {...},
-        "token_system": {...},
-        "pact_system": {...},
-        "burnout_system": {...},
-        "monotony_tracking": {...},
-        "palette_state": {...},
-        "accessories": {...}
+        "run_progress": {...},              # Persist
+        "resources": {...},                 # Persist (exclude derivati: depth, palette_tier)
+        "puzzle_progression": {...},        # Persist
+        "token_system": {...},              # Persist
+        "pact_system": {...},               # Persist
+        "burnout_system": {...},            # Persist (exclude derivati flags)
+        "monotony_tracking": {...},         # Persist (solo eventi se necessario compress)
+        "palette_state": {...},             # Persist (solo per recovery hysteresis se diff)
+        "accessories": {...}                # Persist
     }
 
 func load_state(data: Dictionary):
@@ -262,7 +277,37 @@ func load_state(data: Dictionary):
 
 ## Dipendenze Configurazione
 Il modello dati si collega ai file configurazione JSON:
-- `degradation_config.json`: Soglie palette e valori hysteresis
-- `puzzles_config.json`: Parametri tier e soglie stage burnout
-- `node_pools.json`: Disponibilità nodi e vincoli slot
+- `palette.json`: Soglie palette e hysteresis
+- `puzzles.json`: Parametri escalation tier
+- `burnout.json`: Soglie pattern-day e penalità stage
+- `progression.json`: Gating Hard per giorno (% limiti)
+- `pact.json`: Coefficienti monotony spike, growth penalty, decline streak benefits
+- `monotony.json`: Increments base eventi + caps
+- `tokens.json`: Sequenza deterministica e cap base
+- `economy.json`: Conversioni frammenti→MC e coefficienti Depth
 - `accessories.json`: Effetti accessori e regole consegna
+
+## Appendice: Classificazione Campi
+| Campo | Persist | Derivato | Volatile Giorno | Note |
+|-------|--------|---------|-----------------|------|
+| growth | sì | no | no | |
+| monotony | sì | no | no | |
+| comfort | no | no | sì | Reset parziale |
+| growth_score | sì | no | parz | Decay giornaliero |
+| palette_tier | no | sì | n/a | Ricostruibile |
+| fragments | sì | no | no | |
+| fragments_bank | sì | no | no | Patto |
+| mc | sì | no | no | |
+| pact_accepts | sì | no | no | |
+| pact_decline_streak | sì | no | no | |
+| pact_growth_penalty_mult | no | sì | n/a | Calcolato runtime |
+| burnout_stage | sì | no | giorno | Persist per feedback |
+| burnout_pattern_days | sì | no | n/a | Rolling window |
+| burnout_forced_rest_next | no | sì | n/a | |
+| tokens_inventory | sì | no | no | |
+| token_queue_index | sì | no | no | |
+| depth | no | sì | n/a | Computato get_depth |
+| hard_repeat_streak (per tipo) | sì | no | giorno | Per evento monotonia |
+| monotony_events_today | opz | no | sì | Compressibile |
+
+NOTE: Campi derivati NON salvati → ricostruiti all’avvio. Se in futuro servono migrazioni, aggiungere `schema_version` nel blocco root.

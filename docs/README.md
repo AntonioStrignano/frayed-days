@@ -1,7 +1,7 @@
 # frayed-days
-**"Restare consuma quanto andare"**
+**"Restare consuma quanto andare"** / *Shortcuts give time now, cost colour later.*
 
-Life-loop micro narrative: shortcuts give time now, cost color later.
+> Questo README è l'unica fonte autorevole di orientamento (bilingue). Le vecchie varianti `README_IT.md` sono deprecate e mantengono solo un redirect.
 
 ## Developer Context / Working Mode
 Solo-dev (background principale: musicista; skill grafiche limitate; programmazione in apprendimento progressivo) supportato da assistenza IA per colmare gap architettura, refactor e documentazione. Linee guida personali:
@@ -30,8 +30,10 @@ A 2D Godot 4 narrative day-loop about the trade-off between immediate shortcuts 
 - Tokens: stored, unused convert to wildcard points at run end; pact carry penalty scaffolded (`TokenManager`).
 - Logging: structured per-node, per-day, per-run (`Logger`).
 
-## Depth & End Conditions
-Depth = growth - (monotony + debt). Routine lock if depth < 0 OR shortcut pattern ratio > 0.7. Growth ending logic not yet implemented (placeholder for narrative branch).
+## Depth & End Conditions (Updated v0.1)
+New formula: `Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) - Monotony - (PactAccepts * 8)`
+
+Legacy `growth - (monotony + debt)` replaced (debt parked). Routine lock if depth < 0 OR shortcut pattern ratio > 0.7 (ratio subject to revalidation). Growth finale triggers when depth stays positive and monotony below lock threshold in target window (see balancing notes).
 
 ## File Map (Key Scripts)
 - `autoload/GameState.gd`: Run/day mutable state, config cache, start/end run/day logic.
@@ -45,10 +47,19 @@ Depth = growth - (monotony + debt). Routine lock if depth < 0 OR shortcut patter
 - `managers/Logger.gd`: Event accumulation & JSON file flush.
 
 ## Data Config (JSON)
-- `data/degradation_config.json`: Monotony + shortcut ratio thresholds & presentation layer arrays.
-- `data/node_pools.json`: Base node templates (expandable) & slot range.
-- `data/accessories.json`: Box definitions + accessory effect placeholders.
-- `data/puzzles_config.json`: Puzzle parameter tiers, burnout settings, hint costs.
+Authoritative tuning surfaces (v0.1). All numbers should move here instead of hardcoding in scripts.
+
+| File | Purpose (EN/IT) |
+|------|-----------------|
+| `data/puzzles.json` | Escalation (2→3 successes), base growth values, fragment drop, hard repeat monotony |
+| `data/monotony.json` | Monotony increments, reflection reduction caps |
+| `data/burnout.json` | Pattern-day triggers & stage effects |
+| `data/pact.json` | Pact spikes, penalties, decline streak benefits, depth coefficients |
+| `data/tokens.json` | Deterministic sequence & base cap |
+| `data/palette.json` | Palette thresholds & hysteresis margins |
+| `data/progression.json` | Hard gating by day (%) + escalation reference |
+| (legacy) `data/degradation_config.json` | Superseded by `palette.json` (migrate then remove) |
+| (legacy) `data/puzzles_config.json` | Superseded by `puzzles.json` (migrate then remove) |
 
 ## Challenge Node Update Order (Enforced)
 1. Time decrement
@@ -75,25 +86,34 @@ base_challenge.category = "challenge"
 DayController.process_next(base_challenge)
 ```
 
-## Balancing & Design Docs
-See `docs/` folder:
-- `PUZZLES.md` puzzle archetype notes
-- `BALANCING_NOTES.md` initial numeric targets
-- `IDEAS.md` parking lot (scope guarded)
-- `TODO_BACKLOG.md` enhancements / tech debt
-- `OPEN_QUESTIONS.md` unresolved design decisions
-- `ARCHITECTURE.md` extended overview
+## Documentation Index (Authoritative)
+IT (master detail) / EN (synced snapshot):
 
-## Next Steps (Planned)
-- Implement real interactive puzzle scenes replacing RNG stubs.
-- Visual/audio degradation feedback pass (palette & text richness variants).
-- Accessory effect application into delta pipeline (growth multipliers, monotony modifiers).
-- Forced comfort day trigger when burnout persists beyond threshold.
-- Depth-based ending branching logic + narrative surfaces.
-- Persist saves to disk (serialize `GameState.save_state()`).
+| Area | IT | EN |
+|------|----|----|
+| Core Loop | `docs/it/SPEC_CORE_LOOP_it.md` | `docs/SPEC_CORE_LOOP.md` |
+| Design Overview | `docs/it/DESIGN_it.md` | `docs/DESIGN.md` (Addendum v0.1) |
+| Balancing Snapshot | `docs/it/BALANCING_NOTES_it.md` | `docs/BALANCING_NOTES_EN_SNAPSHOT.md` |
+| Economy | `docs/it/ECONOMIA_it.md` | `docs/ECONOMY.md` |
+| Telemetry | `docs/it/TELEMETRIA_it.md` | `docs/TELEMETRY.md` |
+| Data Model | `docs/it/DATA_MODEL_it.md` | (EN pending if needed) |
+| Progression | `docs/it/PROGRESSION_it.md` | (mirror pending) |
+| Puzzles | `docs/it/PUZZLES_it.md` | (EN backlog) |
 
-## Anti-Feature Creep Guardrails
-If a proposed addition introduces: new resource type, combat loop, complex physics, or procedural content—reject or re-scope before implementation.
+Support / meta:
+`IDEAS_it.md`, `OPEN_QUESTIONS_it.md`, `TODO_BACKLOG_it.md` (Italian master) + English legacy where present.
+
+## Next Steps (Implementation Queue)
+1. Config loader + validation (migrate legacy JSON names to new set)
+2. Implement updated escalation (2/3 successes) & gating (33% / 50% Hard) in `PuzzleManager` / `DayController`
+3. Pact rework (token cap removal, fragments banking, penalties)
+4. Burnout pattern-day evaluator (windowed % puzzle tracking)
+5. Depth formula switch + derived field (don’t persist)
+6. Telemetry emission per updated schema ordering
+7. Removal of deprecated JSON (`degradation_config.json`, `puzzles_config.json`) once parity confirmed
+
+## Guardrails / Anti-Creep (EN/IT)
+Reject or re-scope if a proposal adds: new resource type (non-justified), combat loop, heavy physics, wide procedural generation. Validate each feature against pillars + telemetry hypothesis.
 
 ## License / Credits
 (TBD) Provide license before content distribution.

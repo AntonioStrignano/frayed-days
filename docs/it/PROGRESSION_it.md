@@ -108,52 +108,41 @@ func can_offer_hard_puzzle(current_day: int, hard_puzzles_today: int, total_puzz
 ## Integrazione Token con Progressione
 
 ### Regola Token Garantito
-Ogni completamento puzzle (successo o fallimento) fornisce token dalla sequenza deterministica:
+### Regole Gating Difficoltà (Aggiornate v0.1)
 **Focus → Foresight → Null Debt → Stabilizer → Filter Boost → WildSeed → (loop)**
 
-**Impatto Progressione**:
-- I token forniscono risorse bridge durante transizioni difficoltà
-- La scelta WildSeed crea punti decisione strategici
-- Cap inventario 4-token forza consumo regolare
+### Protezione Early Game & Percentuali Hard
+**Giorni 1-2**: Nessun Hard (solo Easy)
+**Giorni 2-3**: Easy + Medium (0% Hard)
+**Giorni 4-5**: Hard consentiti ma ≤33% degli slot puzzle del giorno
+**Giorno ≥6**: Hard ≤50% degli slot puzzle (cap progressivo)
 
-### Pressione Sistema Patto
-**Gestione Picchi Difficoltà**:
-- I patti diventano allettanti durante muri progressione difficili
-- Scaling punitivo scoraggia uso patto ripetuto
+Razionale: introduzione graduale evitando saturazione cognitiva e mantenendo un “ramp” riconoscibile.
 - Streak rifiuto ricompensano persistenza attraverso difficoltà
 
 ## Gating Monotonia-Driven
-
-### Conseguenze Comportamento Skip
-**Accumulo Monotonia**:
-- Skippare puzzle: +6 monotonia
-- Evitare retry dopo fallimento: +4 monotonia
-- Crea pressione per ingaggiare con difficoltà appropriata
-
-**Degradazione Palette**:
-- Monotonia alta spinge verso tier visivi desaturati
-- Feedback visivo rinforza conseguenze comportamentali
-- Fornisce comunicazione chiara stato progressione
+func can_offer_hard_puzzle(current_day: int, hard_puzzles_today: int, total_puzzles_today: int) -> bool:
+    if current_day <= 3:
+        return false
+    var hard_percentage = float(hard_puzzles_today) / max(1.0, float(total_puzzles_today))
+    if current_day <= 5:
+        return hard_percentage < 0.33
+    return hard_percentage < 0.50
 
 ### Percorsi Recovery
-**Riduzione Monotonia**:
+## Sistema Escalation Tier (Aggiornato v0.1)
 - Sequenze successo supportate da reflection: -3 monotonia (cap -6/giorno)
 - Completamento puzzle Hard con skip minimi
-- Incoraggia pattern gioco diversificati e sfidanti
-
-## Arco Progressione Lungo Termine
-
-### Run 1-3: Costruzione Fondamenta
-- Esplorazione tier Easy/Medium
-- Familiarità sistema reflection
-- Comprensione economia token base
-
+**Easy → Medium**: 2 successi consecutivi (maggiore stabilità prima del salto)
+**Medium → Hard**: 3 successi consecutivi (riduce accesso prematuro Hard)
+**Razionale**: rallentare la scalata iniziale offre finestra di adattamento e produce distribuzione Hard più controllata nei primi giorni run.
 ### Run 4-7: Sviluppo Competenza
 - Accesso regolare tier Hard
 - Apprendimento gestione burnout
-- Sofisticazione decisioni patto
-
-### Run 8-12: Dimostrazione Mastery
+**Trigger Regressione**:
+- Due fallimenti consecutivi nello stesso tier → retrocede di 1
+- Easy non retrocede
+- Singolo fallimento azzera solo la streak di salita
 - Mantenimento depth positivo consistente
 - Achievement tier palette avanzati
 - Approccio risoluzione Growth vs. Routine
