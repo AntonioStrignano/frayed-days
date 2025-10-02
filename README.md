@@ -3,6 +3,18 @@
 
 Life-loop micro narrative: shortcuts give time now, cost color later.
 
+## Developer Context / Working Mode
+Solo-dev (background principale: musicista; skill grafiche limitate; programmazione in apprendimento progressivo) supportato da assistenza IA per colmare gap architettura, refactor e documentazione. Linee guida personali:
+- Iterazioni corte: prima scheletro funzionante, poi tuning dati.
+- Nessun nuovo sistema se uno esistente è instabile.
+- Tutto il bilanciamento esterno in JSON (evitare magic numbers nello script).
+- Telemetria minima prima di "sentire" il bilanciamento.
+- Commit frequenti e granulari (<= 1 concetto per commit).
+- Se complessità visiva > capacità attuale → placeholder minimale + TODO visual.
+- Ogni feature: motivo chiaro legato a un pillar oppure scartata.
+
+Promemoria motivazionale: imparare facendo > perfezionare a vuoto. Refactor guidato da misure (profiling / telemetria), non da ansia estetica del codice.
+
 ## High Concept
 A 2D Godot 4 narrative day-loop about the trade-off between immediate shortcuts (time saved now, future monotony) and deliberate growth (puzzle effort, delayed payoff). Across ~10–12 runs the player either reaches a Growth resolution or falls into a Routine hard lock.
 
