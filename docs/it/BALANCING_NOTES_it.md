@@ -1,6 +1,56 @@
 # Note di Bilanciamento
 Formule numeriche aggiornate riflettendo overhaul design.
 
+## Snapshot v0.1 (Congelato per Scheletro)
+Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) − Monotony − (PactAccepts * 8)
+
+Monotony Deltas:
+- skip: +6
+- fail_exit: +4
+- hard_repeat_same_type: +2 stacking (max +6)
+- comfort_overuse_2: +5
+- comfort_overuse_3: +8
+- forced_comfort_day: +10
+- patto_accept: +15 * N
+- reflection_first_day: -3 (cap -6/giorno)
+
+GrowthScore:
+- easy +1, medium +2, hard +4 (+1 bonus no skip ultimi 2 slot)
+- fail + retry immediato: +0.5
+- reflection→success stesso tipo: +1
+- decay se nessuna reflection nel giorno: -2
+
+Escalation Tier (aggiornata): Easy→Medium 2 successi; Medium→Hard 3 successi; 2 fail consecutivi stesso tier → retrocede; Easy non retrocede.
+
+Gating Hard Giorni:
+- Giorno 1: solo Easy
+- Giorni 2–3: Easy + Medium
+- Giorni 4–5: Hard abilitato (densità Hard ≤33%)
+- Giorno ≥6: Hard densità ≤50%
+
+Burnout Pattern-Day:
+- Stage1: 2 giorni consecutivi puzzle_ratio ≥80% e comfort=0 → palette cap tier5
+- Stage2: 3 giorni consecutivi puzzle_ratio ≥75% e comfort ≤1 → -15% Growth reward + timer -10%
+- Rest Day: dopo Stage2 se persiste puzzle_ratio ≥70% → giorno forced (solo Comfort/Reflection) + Monotony +10 + reset
+- Recupero: giorno <70% puzzle + (Comfort/Reflection ≥1) → stage -1
+
+Token Cap Dinamico: base cap 4; Patto attivo cap infinito.
+
+Patto:
+- Spike monotony +15*N
+- Growth penalty run successiva -15% * N (cap -45%)
+- Fragment retention & conversion 2:1 (base 3:1)
+- Decline chain: (2) +10% Growth primi 2 puzzle; (3) +1 frammento Hard; (≥4) -5% monotony gain cumulativo (cap -30%)
+
+MC:
+- Conversione frammenti base: 3:1
+- Conversione sotto Patto: 2:1
+- Coefficiente Depth: 0.3 (TUNING)
+
+Evento monotonia nuovo: hard_repeat_same_type (+2 stacking max +6) se stesso puzzle Hard consecutivo ≥2.
+
+Tutti i valori marcati possono essere ritoccati solo dopo telemetria iniziale (tag `TUNING`).
+
 ## Curve Placeholder (Macro Progression)
 Queste curve sono provvisorie e soggette a validazione telemetria. Marcare cambi con commit `balance:` e aggiornare TODO corrispondente se finalizzate.
 
@@ -80,13 +130,13 @@ TODO_FINAL_GROWTH_TARGET (percentuale giocatori che completano finale growth ≤
 
 **Hysteresis**: 10 punti sotto soglia per risalire; crescita cala solo se GrowthScore < soglia-5 E nessun successo Hard oggi.
 
-### Stage Burnout
-**Trigger Slot-Based**:
-- Stage 1: 6 puzzle consecutivi → Timer -10%, latenza +30ms
-- Stage 2: 9 consecutivi → Stage 1 + ricompensa growth -15%
-- Stage 3: 12 consecutivi → Giornata Comfort Forzata, monotonia +10
-
-**Pattern Giornaliero**: 3 giorni ≥70% puzzle + 0 comfort → auto Stage 1 al Giorno 4
+### Stage Burnout (Pattern-Day v2)
+Sostituisce il puro slot streak per ridurre comportamento grind artificiale.
+- Stage1 Trigger: 2 giorni consecutivi puzzle_ratio ≥80% e comfort=0 → palette cap tier5
+- Stage2 Trigger: 3 giorni consecutivi puzzle_ratio ≥75% e comfort ≤1 → -15% Growth reward + timer -10%
+- Rest Day Forzato: persistenza ≥70% puzzle dopo Stage2 → forzatura giorno solo Comfort/Reflection, Monotony +10, reset burnout.
+- Recupero: giorno <70% puzzle e ≥1 Comfort/Reflection → stage -1.
+*Nota:* Vecchi trigger slot 6/9/12 mantenuti come fallback (disabilitati di default).
 
 ### Scaling Patto (Punitivo)
 **Penalità Accettazione**:
@@ -100,25 +150,29 @@ TODO_FINAL_GROWTH_TARGET (percentuale giocatori che completano finale growth ≤
 
 ### Sistema Token
 **Sequenza Deterministica**: Focus → Foresight → Null Debt → Stabilizer → Filter Boost → WildSeed → (loop)
-**Cap Inventario**: 4 token massimo
+**Cap Inventario Base**: 4 token
+**Patto Attivo**: cap infinito (nessuna perdita per overflow)
 **Garantito**: 1 token per completamento puzzle (successo o fallimento)
 
-## Formula Depth
-`depth = growth - (monotony + debt)`
+## Formula Depth (v0.1)
+`Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) - Monotony - (PactAccepts * 8)`
 
-**Traiettoria Target**: Positiva entro run ~6
-**Stati Fallimento**: depth < 0 OPPURE rapporto scorciatoie > 0.7
+**Traiettoria Target**: Depth positiva stabile entro run ~6
+**Fail States**: Depth < 0 persistente OPPURE rapporto scorciatoie > 0.7
+**Routine Lock**: fissato se entrambe le condizioni persistono 2 giorni consecutivi (TUNING) (TODO_FINAL_GROWTH_TARGET)
 
-## Timing Escalation Tier
-- **Easy → Medium**: 1 successo consecutivo
-- **Medium → Hard**: 2 successi consecutivi in Medium
-- **Regressione**: 2 fallimenti consecutivi retrocedono 1 tier
-- **Reset Progressione**: Singolo fallimento resetta streak escalation
+## Timing Escalation Tier (Aggiornato)
+- Easy → Medium: 2 successi consecutivi
+- Medium → Hard: 3 successi consecutivi
+- Regressione: 2 fallimenti consecutivi retrocedono 1 tier (Hard→Medium / Medium→Easy)
+- Reset: fallimento singolo resetta solo progress verso escalation
 
-## Protezione Early Game
-- **Giorni 1-2**: Nessun puzzle Hard disponibile
-- **Prima Giorno 6**: Max 50% template puzzle Hard
-- **Logica Gating**: Previene carico cognitivo schiacciante durante onboarding
+## Protezione Early Game (Gating Hard)
+- Giorno 1: solo Easy
+- Giorni 2–3: Easy + Medium
+- Giorni 4–5: Hard ≤33% proposte
+- Giorni ≥6: Hard ≤50% proposte
+Motivazione: differire picco cognitivo preservando curva di mastery e variabilità.
 
 ## Economia Fragment
 - **Drop Base**: Puzzle Hard 20% chance

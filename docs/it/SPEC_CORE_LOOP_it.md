@@ -186,3 +186,57 @@ TODO_CUT_THRESHOLD_CONFIRM
 
 ## 15. Principi di Non Duplicazione
 Questo file funge da indice operativo. Numeri finali devono vivere SOLO nei file: Balancing, Data Model, Economia. Qui restano placeholder + TODO.
+
+## 16. Addendum v0.1 (Freeze Minimo)
+Snapshot delle decisioni consolidate prima dell'implementazione (fonte numerica autoritativa: `BALANCING_NOTES_it.md`).
+
+### Depth Formula
+`Depth = Growth + (FragmentsBank * 0.5) + (MC * 0.3) - Monotony - (PactAccepts * 8)`
+(Coefficienti marcati per possibile tuning; penalità Patto lineare cumulativa.)
+
+### Patto v0.1
+Accettare Patto (count = N):
+- Monotonia spike: +15 * N (immediato)
+- Token cap rimosso (infinito) finché Patto attivo
+- FragmentsBank: i frammenti ottenuti non si azzerano a fine giorno
+- Conversione frammenti→MC migliorata: 2:1 (base 3:1)
+- Penalità Growth successivo Day1 post‑Patto: -15% * N (cap -45%)
+- Sconto costi skill ramo Monotony: -20%
+
+Decline Streak (rifiuti consecutivi):
+1: neutro
+2: +10% Growth primi 2 puzzle del giorno
+3: +1 frammento garantito sul primo Hard risolto
+>=4: -5% monotony gain cumulativo (cap -30%)
+
+### Token Cap Dinamico
+Base: 4 token contemporanei. Sotto Patto: infinito.
+
+### Escalation Tier Puzzle
+Easy→Medium: 2 successi consecutivi
+Medium→Hard: 3 successi consecutivi
+Retrocesso: 2 fail consecutivi nello stesso tier (Easy non retrocede)
+
+### Gating Hard per Giorno
+G1: solo Easy
+G2–G3: Easy + Medium
+G4–G5: Hard ≤33% slots puzzle
+G≥6: Hard ≤50% slots puzzle
+
+### Burnout Pattern-Day (v2)
+Stage1 trigger: 2 giorni consecutivi ≥80% slot puzzle AND comfort_count == 0 → palette_tier max 5
+Stage2 trigger: 3 giorni consecutivi ≥75% slot puzzle AND comfort_count ≤1 → -15% Growth + day_timer -10%
+Rest Day forzato: persiste comportamento (giorno successivo ancora ≥70% puzzle) → giornata solo Comfort/Reflection, Monotony +10, reset pattern
+Recovery: giorno con <70% puzzle AND ≥1 Comfort/Reflection → decrementa stage di 1
+
+### Evento Monotonia Nuovo
+`hard_repeat_same_type`: +2 monotony stacking (max +6) se Hard consecutivi stesso archetipo.
+
+### FragmentsBank
+Accumulo persistente dei frammenti sotto Patto; fuori Patto i frammenti end‑day vengono consumati/convertiti secondo economia.
+
+### MC (Monotony Coins)
+Ruolo sperimentale: diramazione monotony economy / mitigazione progressi. Conversione base: 3 frammenti → 1 MC (2:1 sotto Patto). Coefficiente Depth 0.3.
+
+---
+NOTA: Questa sezione non deve duplicare numeri se divergono: aggiornare prima `BALANCING_NOTES_it.md` e propagare qui solo testo sintetico.

@@ -41,7 +41,7 @@ Campi opzionali frequenti (inserire solo se rilevanti):
 
 Regola: no valori null → se sconosciuto, ometti.
 
-## 4. Catalogo Eventi Minimi
+## 4. Catalogo Eventi Minimi (Aggiornato v0.1)
 
 ### 4.1 `session_start`
 Triggered: avvio eseguibile / caricamento menù principale.
@@ -64,7 +64,7 @@ Per QUALSIASI nodo completato (puzzle o non puzzle). Campi extra:
 | `skipped` | bool | se skip forzato/applicato |
 
 ### 4.4 `puzzle_result`
-Solo se `node_type = puzzle`. Campi extra:
+Solo se `node_type = puzzle`. Campi extra (aggiornati):
 | Campo | Tipo | Note |
 |-------|------|------|
 | `puzzle_archetype` | string | `memory` / `filter` / `timing` / ... |
@@ -77,6 +77,9 @@ Solo se `node_type = puzzle`. Campi extra:
 | `token_queue_index` | int | indice token sequence (pre avanzamento) |
 | `reward_growth_raw` | int | valore pre moltiplicatori |
 | `reward_fragment` | int | 0/1 frammento ottenuto |
+| `hard_repeat_flag` | bool | true se Hard stesso archetipo consecutivo (evento monotonia) |
+| `monotony_delta` | int | incremento monotonia associato (se applicabile) |
+| `depth_snapshot` | int | valore depth post evento (opzionale) |
 
 ### 4.5 `reflection_use`
 Quando il giocatore utilizza una reflection (hint / analisi). Extra:
@@ -108,7 +111,8 @@ Extra:
 |-------|------|------|
 | `from` | int | stage precedente |
 | `to` | int | nuovo stage |
-| `trigger` | string | causa (puzzle_fail_chain, overplay, forced_rest_end) |
+| `trigger` | string | causa (pattern_window, forced_rest_end, manual_recovery) |
+| `pattern_days_window` | string | es: "80,82" percentuali giorni che hanno causato escalation |
 
 ### 4.9 `pact_decision`
 Offerta patto mostrata. Extra:
@@ -116,7 +120,9 @@ Offerta patto mostrata. Extra:
 |-------|------|------|
 | `offered_iter` | int | numero patto (1+) |
 | `accepted` | bool | scelta |
-| `penalty_growth_next` | float | moltiplicatore risultante se accettato |
+| `accept_count_total` | int | totale accettazioni post evento |
+| `decline_streak` | int | consecutivi decline post evento |
+| `penalty_growth_next` | float | moltiplicatore risultante se accettato (es 0.85) |
 | `monotony_delta` | int | incremento immediato |
 
 ### 4.10 `day_end`
@@ -126,8 +132,11 @@ Fine giornata (room_slot 7). Extra:
 | `puzzles_done` | int | conteggio |
 | `hard_count` | int | numero Hard |
 | `skips_today` | int | totale skip |
-| `fragments_today` | int | frammenti |
+| `fragments_today` | int | frammenti ottenuti (non bank) |
+| `fragments_bank` | int | totale FGB post giorno |
+| `mc_gained` | int | MC ottenute nel giorno |
 | `burnout_stage` | int | finale giornata |
+| `depth_day_end` | int | depth calcolata a fine giornata |
 
 ### 4.11 `run_end`
 Conclusione run. Extra:
@@ -137,7 +146,10 @@ Conclusione run. Extra:
 | `days_completed` | int | numero giorni |
 | `final_growth` | int | growth_total finale |
 | `final_monotony` | int | monotony finale |
-| `depth` | int | final depth |
+| `final_depth` | int | depth finale |
+| `pact_accepts` | int | totale accettazioni patto |
+| `fragments_bank_final` | int | FGB finale |
+| `mc_total` | int | MC totali accumulate |
 
 ## 5. Metriche Derivate (Post-Processing)
 Non registrate direttamente, ma calcolate offline:
@@ -200,6 +212,19 @@ Check di coerenza specifico per `puzzle_result`: se manca `puzzle_archetype` →
 | Interpretazione ambigua `success` | Boolean sempre esplicito in `puzzle_result` |
 
 ## 13. Prossimi Passi
+
+## 14. Ordine Campi Congelato (Appendice v0.1)
+Sequenza chiavi per serializzazione (append se nuovi, mai riordinare):
+
+`puzzle_result`: [event_type, t, run_id, day, slot, puzzle_archetype, tier, difficulty_label, success, time_active_ms, fail_count_type, streak_success_type, token_queue_index, reward_growth_raw, reward_fragment, hard_repeat_flag, monotony_delta, depth_snapshot]
+
+`pact_decision`: [event_type, t, run_id, day, slot, offered_iter, accepted, accept_count_total, decline_streak, penalty_growth_next, monotony_delta]
+
+`day_end`: [event_type, t, run_id, day, puzzles_done, hard_count, skips_today, fragments_today, fragments_bank, mc_gained, burnout_stage, depth_day_end]
+
+`run_end`: [event_type, t, run_id, day, ending_type, days_completed, final_growth, final_monotony, final_depth, pact_accepts, fragments_bank_final, mc_total]
+
+Altri eventi seguono ordine tabellare se non specificato.
 1. Implementare wrapper `Telemetry.gd` con coda asincrona (opzionale se write blocking irrilevante).
 2. Integrare emissione in: start session, start run, end node, end day, end run, token usage, reflection, burnout/palette, pact.
 3. Aggiungere test debug: pressing F3 → forza evento fittizio per validare write.

@@ -1,4 +1,4 @@
-# Economia di Gioco (MVP / Vertical Slice)
+# Economia di Gioco (MVP / Vertical Slice) – Addendum v0.1 Integrato
 
 Obiettivo: definire flussi minimi di valute e risorse per sostenere motivazione, pacing e decisioni micro senza introdurre inflazione o complessità prematura.
 
@@ -8,52 +8,59 @@ Obiettivo: definire flussi minimi di valute e risorse per sostenere motivazione,
 | Codice | Nome | Tipo | Stato Persistente | Ruolo Primario | NOTE |
 |--------|------|------|-------------------|----------------|------|
 | GC | Growth Coin | Soft Currency | Run (giorno→giorno) | Sblocco skill / meta | Consegna differita end-day |
-| MC | Monotony Coin | (Soft?) Currency Ibrida | Run | Contrappeso / gating (DA CHIARIRE) | POTENZIA monotony decisions (TODO_DEFINE_MC_ROLE) |
-| TOKF | Token Fittizi | Risorsa Temporanea | Giorno (parziale) | Convertibili in MC / micro scelte | Nome provvisorio (rename) |
+| MC | Monotony Coin | Branch Currency | Run | Mitigazioni monotonia / branch skill | Conversione da frammenti (3:1 base / 2:1 Patto) |
+| FGB | FragmentsBank | Accumulo Protetto | Run | Conserva frammenti sotto Patto | Trasferiti a FRAG quando Patto termina |
+| FRAG | Fragment | Collezionabile Raro | Run (limit) | Milestone / gating extra | Banking disabilitato se Patto non attivo |
+| TOKF | Token Fittizi | Risorsa Temporanea | Giorno (parziale) | (Possibile rimozione) | Potrebbe essere assorbito dai Token principali post VS |
+| TOK# | Token (6 tipi) | Carica Attiva | Run (inventario) | Potenziamenti puzzle deterministic cycle | Non scambiabili |
 | MONO | Monotony | Stato (scalare) | Run | Pressione / rischio lock | Non è valuta spendibile |
 | COMF | Comfort | Risorsa Consumo | Giorno | Alimenta Reflection / hint | Buffer recupero cognitivo |
-| FRAG | Fragment | Collezionabile Raro | Run (limit) | Milestone / gating extra | Pity dopo 4 Hard chain |
-| TOK# | Token (6 tipi) | Carica Attiva | Run (inventario) | Potenziamenti puzzle deterministic cycle | Non scambiabili |
 
-## 2. Differenziazione Sintetica
+## 2. Differenziazione Sintetica (Aggiornata)
 - GC = progresso deliberato (output puzzle) → alimenta skill tree.
-- MC = eco delle scelte orientate alla monotonia / scorciatoie (ibrido). Se il ruolo non si distingue nettamente entro VS → rimuoverla.
-- TOKF = ponte decisionale → conversione ponderata vs accumulo eccesso.
-- COMF = attrito speso per ottenere conoscenza (hint) e ridurre marginalmente monotonia.
-- MONO = spinta negativa sistemica; non può essere spesa, solo mitigata indirettamente.
-- FRAG = progress marker scarso, evita saturazione GC.
+- MC = derivata da frammenti (non direttamente dal puzzle raw); leva delle scelte Patto (tasso conversione migliorato) per mitigazioni monotonia.
+- FGB = staging area che trattiene frammenti finché Patto attivo per accumulo strategico.
+- FRAG = progress marker scarso; senza Patto devono essere convertiti secondo economia base (no retention oltre giorno?).
+- TOKF = candidato taglio se MC sufficiente (flag CUT_TOKEN_FICTIVE se unify).
+- TOK# = anticipazione strategica (deterministico), crea micro agency.
+- COMF = attrito speso per ottenere conoscenza (hint) e modulare burnout.
+- MONO = pressione; non spesa esplicita.
 
-## 3. Fonti & Sink
+## 3. Fonti & Sink (Revisione v0.1)
 ### 3.1 Schema Flussi (ASCII)
 ```
-Puzzle Success --> (growth_raw) --> GC (differita end-day)
-Puzzle Success (Medium/Hard) --> TOKF --> Conversione --> MC
-Skip/Patto/OverComfort --> MONO ↑
-Reflection --> COMF ↓ e (potenziale) MONO ↓
-Hard Success Chain --> FRAG ↑
-Token Cycle Avanzamento --> TOK# Generati (ordine deterministico)
+Puzzle Success --> growth_raw buffer --> GC (end-day)
+Puzzle Success Hard --> FRAG (+chance / pity) --> (se Patto) FGB accumula
+End-of-Day (no Patto) FRAG -> (opzioni) convertizione MC (3:1) / sink skill gating
+End-of-Day (Patto) FGB persiste (no conversione forzata)
+Patto attivo --> Conversione FRAG->MC opzionale 2:1 (consume da FGB)
+Decline Streak alto --> monotony_gain mitigato
+Reflection --> COMF - / (potenziale) monotony -
+Skip / Patto Accept / Hard repeat archetype --> MONO ↑
+Token Cycle --> TOK# generati --> uso puzzle (consumo)
 ```
 
 ### 3.2 Fonti Dettaglio
 | Risorsa | Fonti | Quantità Placeholder | Note |
 |---------|-------|----------------------|------|
-| GC | growth_raw convertito a fine giornata (scalato) | (E 10 / M 15 / H 20) → differita | Delivery differita consente tuning retention |
-| MC | Conversione TOKF (ratio) | 2 TOKF → 1 MC (cap 6/giorno) | TODO_RATIO_TARGET se riequilibrio |
-| TOKF | Success Medium+, Hard Fail | 1 per evento | Nome definitivo TBD (TODO_TOKEN_FONTS) |
-| COMF | Nodo Comfort, successi puzzle (piccola quota) | Comfort node +X, puzzle +1 (cap giornaliero) | Evitare hoarding infinito |
-| FRAG | Hard success (20%) + pity chain | 0.2 chance / chain definita | Cap 4 VS |
-| TOK# | Avanzamento sequenza deterministica | 1 step per puzzle completato (fail incluso) | Coda ciclica (6) |
+| GC | growth_raw convertito end-day | E/M/H base (10/15/20) | Tuning centrale balancing |
+| MC | Conversione FRAG (3:1 base / 2:1 Patto) | Dipende da FRAG | Rimuovere se non usata entro VS |
+| FRAG | Hard success (20%) + pity chain | Cap 4 VS | Banking sotto Patto → FGB |
+| FGB | Patto attivo (redirect FRAG) | 1:1 FRAG acquisito | Non convertito finché Patto persiste |
+| TOK# | Avanzamento puzzle completati/fail | 1 per puzzle | Sequenza deterministica |
+| COMF | Nodo Comfort / success puzzle piccoli | +X / +1 (cap) | Prevenire hoard |
+| MONO | Skip / Patto / Hard repeat / Burnout eventi | Variabile | Pressione cumulativa |
 
 ### 3.3 Sink Dettaglio
 | Risorsa | Sink | Costo Placeholder | Note |
 |---------|------|-------------------|------|
-| GC | Skill unlock | 6 / 12 / 18 | Tier scaling semplice iniziale |
-| MC | Skill gating alternativa / trade (??) | TBD | Se non chiaro → rimuovere (TODO_DEFINE_MC_ROLE) |
-| TOKF | Conversione in MC | 2:1 | Altrimenti scarto a fine giorno |
-| COMF | Reflection (hint1/hint2) | 2 / 3 | Monotony -3 reflection valida (max2) |
-| MONO | (Indiretto) Reflection / gating palette | — | Non un sink esplicito |
-| FRAG | (Nessuno nel VS) | — | Solo conteggio milestone |
-| TOK# | Consumo on use (effetto puzzle) | 1 | Si rigenerano via ciclo |
+| GC | Skill unlock | 6 / 12 / 18 | Tier scaling semplice |
+| MC | Mitigazioni monotonia / reroll / branch skill | TBD (bundle) | TODO_TUNING_MC_SINKS |
+| FRAG | (Fuori Patto) conversione in MC | 3:1 | Oppure tenuti se design decide retention minima |
+| FGB | Conversione volontaria in MC | 2:1 | Solo sotto Patto |
+| TOK# | Uso potere puzzle | 1 each | Rigenerati dal ciclo |
+| COMF | Reflection (hint1/hint2) | 2 / 3 | -3 monotony (max2) |
+| MONO | (Indiretto) Reflection / skill future | — | Non sink diretto |
 
 ## 4. Sequenza Token Deterministica
 Ordine base ciclico (cap inventario 4):
@@ -69,16 +76,18 @@ Regole:
 - Se token dello slot già posseduto e inventario <4 → aggiungi. Se pieno → scarta (telemetry `token_discard` se implementato future).
 - No randomizzazione (design anticipazione strategica).
 
-## 5. Formule Placeholder
+## 5. Formule (Aggiornate v0.1)
 | Concetto | Formula / Regola | TODO |
 |----------|------------------|------|
-| growth_raw (success) | Easy 10 / Medium 15 / Hard 20 | Bilanciamento dinamico dopo telemetria |
+| growth_raw (success) | Easy 10 / Medium 15 / Hard 20 | TUNING_BAL_GROWTH_VALUES |
 | growth_raw (failure) | floor(success_value * 0.35) | Confermato (E3/M5/H7) |
-| growth_score | +1/+2/+4 (E/M/H success) | TODO_GS_CURVE per macro pacing |
-| monotony_increment | skip=+X, patto=+15*iter, burnout_stage3 day comfort=+Y | TODO_MONOTONY_CURVE |
+| growth_score | +1/+2/+4 (E/M/H success) | TODO_GS_CURVE |
+| monotony_increment (patto) | +15 * pact_accept_count | TUNING_MONO_SPIKE |
+| monotony_increment (hard_repeat) | +2 stacking (max +6) | Nuovo evento |
 | monotony_reflection_reduction | −3 (max 2/giorno conteggiati) | Regola smoothing |
-| token_conversion_rate | TOKF:MC = 2:1 | TODO_RATIO_TARGET se cambia |
-| depth | growth_total − monotony | Soglia finale depth ≥400 |
+| fragments→MC | 3:1 base / 2:1 Patto | TUNING_CONV_FRAG_MC |
+| depth | Growth + (FGB *0.5) + (MC *0.3) - Monotony - (PactAccepts *8) | Coeff tuning |
+| burnout_penalty_stage2 | -15% Growth + -10% day timer | Placeholder |
 
 ## 6. Metriche Pacing Chiave
 | Metrica | Target Iniziale | Uso |
