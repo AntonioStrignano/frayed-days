@@ -1,6 +1,41 @@
 # Note di Bilanciamento
 Formule numeriche aggiornate riflettendo overhaul design.
 
+## Curve Placeholder (Macro Progression)
+Queste curve sono provvisorie e soggette a validazione telemetria. Marcare cambi con commit `balance:` e aggiornare TODO corrispondente se finalizzate.
+
+### Growth Totale Target (Cumulativo Giorni 1–12)
+Valori % vs obiettivo finale (100 = soglia run finale growth).
+```
+Giorno:   1   2   3   4   5   6   7   8   9  10  11  12
+Target%:  5  12  20  30  40  50  58  65  72  80  90 100
+```
+TODO_GROWTH_CURVE (se differisce post playtest)
+
+### Monotonia Target (Accumulo Controllato)
+```
+Giorno:      1   2   3   4   5   6   7   8   9  10  11  12
+Monotony≈:   5   9  14  18  21  24  26  28  31  33  36  <40
+```
+TODO_MONOTONY_CURVE
+
+### Growth Score Target
+```
+Giorno:      1   2   3   4   5   6   7   8   9  10  11  12
+GS≈:         4   8  12  15  19  23  26  30  36  42  46  50
+```
+TODO_GS_CURVE
+
+### % Puzzle Hard per Segmento (Bands)
+Segmenti (vincoli duri massimi, obiettivi preferiti tra parentesi):
+- Days 1–2: 0% (0%)
+- Days 3–5: ≤25% (15–20%)
+- Days 6–8: ≤50% (35–45%)
+- Days 9–12: ≤70% (55–65%)
+Hard gating deve rispettare unlocking progressivo per archetipi.
+
+TODO_FINAL_GROWTH_TARGET (percentuale giocatori che completano finale growth ≤X run)
+
 ## Formule Core
 
 ### Growth Score (Progressione Palette)
@@ -93,6 +128,6 @@ Formule numeriche aggiornate riflettendo overhaul design.
 ## Parametri Tuning Aperti
 - Sensibilità margine hysteresis (attualmente 10 punti)
 - Tasso decay giornaliero Growth Score (attualmente -2)
-- Velocità recovery stage burnout
+- Velocità recovery stage burnout (TODO_BURNOUT_RECOVERY_MODEL)
 - Frequenza offerte tentazione patto
 - Scaling tasso drop fragment per numero run

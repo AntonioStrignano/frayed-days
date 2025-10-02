@@ -1,5 +1,16 @@
 # Sistema Progressione & Gating
 
+## Sintesi Condizioni Fine Run
+Condizioni mutuamente esclusive (valutate end-day):
+- Finale Growth: day_index == 12 AND growth_total > monotony AND (depth ≥ 400 opzionale) → finale crescita.
+- Monotony Lock: day_index ≥ 15 AND monotony_lock_flag true (monotonia eccessiva / depth <0 persistente) → finale routine.
+- Continua: nessuna delle precedenti → avanza giorno.
+TODO_FINAL_GROWTH_TARGET (percentuale giocatori che raggiungono finale growth ≤ X run)
+
+Limiti strutturali:
+- Puzzle totali run target: 4 puzzle/giorno * 12 ≈ 48 (CAP assoluto 54). Oltre implica runaway pacing.
+- Soglia depth obiettivo finale: depth ≥400 suggerita (tuning post telemetria).
+
 ## Filosofia Progressione Core
 I giocatori avanzano attraverso i tier di difficoltà puzzle basandosi sulla competenza dimostrata, con protezione early-game contro picchi di sfida schiaccianti e percorsi di escalation a lungo termine per engagement sostenuto.
 
@@ -169,3 +180,9 @@ Regole progressione si collegano a:
 - Calibrazione ripidità curva difficoltà
 - Decisioni persistenza progressione cross-run
 - Bilanciamento anti-frustrazione vs. soddisfazione achievement
+
+## Cross-Link
+Vedi anche:
+- `BALANCING_NOTES_it.md` per curve macro e % Hard
+- `ECONOMIA_it.md` per reward differite
+- `SPEC_CORE_LOOP_it.md` per sequenza macro e condizioni finali

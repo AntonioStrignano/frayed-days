@@ -176,3 +176,6 @@ Loop narrativo 2D (Godot 4) che esplora la tensione tra scorciatoie immediate (t
 3. **Recovery Significativo**: Il fallimento fornisce percorsi di miglioramento, non solo penalità
 4. **Coesione Visiva**: Monotonia e crescita si manifestano direttamente nel layer di presentazione
 5. **Equità Deterministica**: Le ricompense core seguono regole prevedibili mantenendo impatto emotivo
+
+## Riferimento Strutturale
+Questo documento copre principi e sistemi; la sequenza operativa dettagliata del loop (stati, timing, vincoli micro) è centralizzata in `SPEC_CORE_LOOP_it.md` per evitare duplicazioni. Numeri finali di bilanciamento risiedono in `BALANCING_NOTES_it.md`; struttura dati in `DATA_MODEL_it.md`; gating e percentuali Hard in `PROGRESSION_it.md`; economia estesa in `ECONOMIA_it.md`; telemetria in `TELEMETRIA_it.md`.

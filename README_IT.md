@@ -1,6 +1,24 @@
 # frayed-days
 Micro narrativa a loop di giornate: le scorciatoie ti danno tempo ora, ma consumano colore dopo.
 
+## Indice Documentazione (IT)
+Documenti centrali aggiornati (design coerente):
+- docs/it/SPEC_CORE_LOOP_it.md (loop macro, stati, pacing, TODO consolidati)
+- docs/it/ECONOMIA_it.md (valute, flussi, placeholder formule)
+- docs/it/TELEMETRIA_it.md (schema eventi baseline)
+- docs/it/DATA_MODEL_it.md (strutture dati e formule base)
+- docs/it/BALANCING_NOTES_it.md (curve placeholder e target)
+- docs/it/PROGRESSION_it.md (condizioni fine run, gating difficoltà)
+- docs/it/PUZZLES_it.md (archetipi finali 6 + scaling tier)
+- docs/it/DESIGN_it.md (overview sistemi, rimandi alle specifiche)
+
+Altri:
+- docs/it/TODO_BACKLOG_it.md
+- docs/it/OPEN_QUESTIONS_it.md
+- docs/it/IDEAS_it.md
+
+(Le sezioni legacy qui sotto verranno progressivamente riallineate / potate; usare i documenti sopra come fonte autorevole.)
+
 ## High Concept
 Loop narrativo 2D (Godot 4) sul compromesso tra scorciatoie immediate (tempo risparmiato ora, monotonia futura) e crescita intenzionale (sforzo nei puzzle, ricompensa differita). In ~10–12 run il giocatore raggiunge una risoluzione di Crescita oppure cade nel blocco di Routine.
 
@@ -17,7 +35,7 @@ Loop narrativo 2D (Godot 4) sul compromesso tra scorciatoie immediate (tempo ris
 - Logging: strutturato per nodo, giorno, run (`Logger`).
 
 ## Depth & Condizioni di Fine
-Depth = growth - (monotony + debt). Routine lock se depth < 0 OPPURE rapporto scorciatoie > 0.7. Logica finale Crescita non ancora implementata (placeholder).
+Depth = growth - (monotony + debt). Routine lock se depth < 0 OPPURE rapporto scorciatoie > 0.7. Logica finale Crescita non ancora implementata (placeholder). (Vedi documenti aggiornati per la versione coerente definitiva.)
 
 ## Mappa File (Script Chiave)
 - `autoload/GameState.gd`: Stato run/giorno, cache config, start/end run/day.
@@ -62,13 +80,7 @@ DayController.process_next(base_challenge)
 ```
 
 ## Bilanciamento & Documenti Design
-Vedi cartella `docs/`:
-- `PUZZLES.md` note archetipi puzzle
-- `BALANCING_NOTES.md` target numerici iniziali
-- `IDEAS.md` backlog idee (scope guard)
-- `TODO_BACKLOG.md` miglioramenti / tech debt
-- `OPEN_QUESTIONS.md` decisioni aperte
-- `ARCHITECTURE.md` overview estesa
+(USARE documenti indicizzati sopra)
 
 ## Prossimi Passi (Pianificati)
 - Implementare scene puzzle interattive reali al posto degli stub RNG.
