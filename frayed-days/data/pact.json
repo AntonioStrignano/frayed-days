@@ -1,5 +1,9 @@
 {
-  "version": 1,
+  "meta": {
+    "version": "0.1",
+    "schema": 1,
+    "notes": "Added meta block"
+  },
   "monotony_spike_per_accept": 15,
   "growth_penalty_day1_per_accept": 0.15,
   "growth_penalty_day1_cap": 0.45,

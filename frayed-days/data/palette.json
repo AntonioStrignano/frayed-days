@@ -1,5 +1,9 @@
 {
-  "version": 1,
+  "meta": {
+    "version": "0.1",
+    "schema": 1,
+    "notes": "Added meta block"
+  },
   "monotony_thresholds": [30, 45, 60],
   "growth_thresholds": [20, 40, 60],
   "hysteresis_margin": 10,

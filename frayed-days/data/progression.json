@@ -1,14 +1,18 @@
 {
-  "version": 1,
+  "meta": {
+    "version": "0.1",
+    "schema": 1,
+    "notes": "Added meta; escalation keys renamed to match puzzles.json"
+  },
   "hard_gating": [
-    {"days": [1,2], "hard_pct_max": 0.0},
-    {"days": [3], "hard_pct_max": 0.0},
-    {"days": [4,5], "hard_pct_max": 0.33},
-    {"days": [6,7,8,9,10,11,12], "hard_pct_max": 0.50}
+    { "days": [1, 2], "hard_pct_max": 0.0 },
+    { "days": [3], "hard_pct_max": 0.0 },
+    { "days": [4, 5], "hard_pct_max": 0.33 },
+    { "days": [6, 7, 8, 9, 10, 11, 12], "hard_pct_max": 0.50 }
   ],
   "escalation_reference": {
-    "easy_to_medium_successes": 2,
-    "medium_to_hard_successes": 3,
-    "demote_fail_chain": 2
+    "easy_to_medium": 2,
+    "medium_to_hard": 3,
+    "demote_after_consecutive_fails": 2
   }
 }
